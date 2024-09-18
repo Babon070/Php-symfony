@@ -9,11 +9,14 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use App\Component\User\FullNameDto;
 use App\Controller\UserCreateAction;
+use App\Controller\UserFullNameAction;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -31,6 +34,16 @@ use Symfony\Component\Validator\Constraints as Assert;
             controller: UserCreateAction::class,
             name: 'users',
         ),
+        new Post(
+            uriTemplate: 'users/full-name',
+            controller: UserFullNameAction::class,
+            input: FullNameDto::class,
+            name: 'fullName',
+        ),
+        new Post(
+            uriTemplate: 'users/auth',
+            name: 'auth'
+        ),
         new Get(),
         new Delete(),
     ],
@@ -40,7 +53,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['user:write']],
     paginationItemsPerPage: 5
 )]
-class User implements PasswordAuthenticatedUserInterface
+class User implements PasswordAuthenticatedUserInterface, UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -84,5 +97,22 @@ class User implements PasswordAuthenticatedUserInterface
         $this->password = $password;
 
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return ['ROLE_USER'];
+        // TODO: Implement getRoles() method.
+    }
+
+    public function eraseCredentials(): void
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->getEmail();
+        // TODO: Implement getUserIdentifier() method.
     }
 }

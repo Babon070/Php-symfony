@@ -3,11 +3,33 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use App\Component\User\ProductInfoDto;
+use App\Controller\UserProductAction;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(),
+        new Post(),
+        new Post(
+            uriTemplate: 'product/price',
+            controller: UserProductAction::class,
+            input: ProductInfoDto::class,
+            name: 'Product'
+        ),
+        new Get(),
+        new Delete(),
+    ],
+    normalizationContext: ['groups' => ['Product:read']],
+    denormalizationContext: ['groups' => ['Product:write']]
+)]
 class Product
 {
     #[ORM\Id]
@@ -16,14 +38,22 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['Product:read', 'Product:write'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['Product:read', 'Product:write'])]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['Product:read', 'Product:write'])]
     private ?Category $category = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['Product:read', 'Product:write'])]
+    private ?MediaObject $image = null;
 
     public function getId(): ?int
     {
@@ -62,6 +92,18 @@ class Product
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getImage(): ?MediaObject
+    {
+        return $this->image;
+    }
+
+    public function setImage(MediaObject $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }
