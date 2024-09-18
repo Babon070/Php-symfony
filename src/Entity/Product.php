@@ -27,8 +27,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),
         new Delete(),
     ],
-    normalizationContext: ['groups' => ['Product:read']],
-    denormalizationContext: ['groups' => ['Product:write']]
+    normalizationContext: ['groups' => ['product:read']],
+    denormalizationContext: ['groups' => ['product:write']]
 )]
 class Product
 {
@@ -38,21 +38,21 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['Product:read', 'Product:write'])]
+    #[Groups(['product:read', 'product:write'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['Product:read', 'Product:write'])]
+    #[Groups(['product:read', 'product:write'])]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['Product:read', 'Product:write'])]
+    #[Groups(['product:read', 'product:write'])]
     private ?Category $category = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['Product:read', 'Product:write'])]
+    #[Groups(['product:read', 'product:write'])]
     private ?MediaObject $image = null;
 
     public function getId(): ?int
