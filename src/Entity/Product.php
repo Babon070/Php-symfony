@@ -8,6 +8,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Component\User\ProductInfoDto;
+use App\Controller\GetProductsByCategoryAction;
+use App\Controller\GetProductsByHardExampleAction;
 use App\Controller\UserProductAction;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,6 +19,27 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     operations: [
         new GetCollection(),
+        new GetCollection(
+            uriTemplate: 'product/by-category',
+            controller: GetProductsByCategoryAction::class,
+            openapiContext: [
+                'parameters' => [
+                    [
+                        'in' => 'query',
+                        'name' => 'categoryId',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]
+                ]
+            ],
+            name: 'GetProducts',
+        ),
+        new GetCollection(
+            uriTemplate: 'product/hard-example',
+            controller: GetProductsByHardExampleAction::class,
+            name: 'GetProductsHardExample',
+        ),
         new Post(),
         new Post(
             uriTemplate: 'product/price',
