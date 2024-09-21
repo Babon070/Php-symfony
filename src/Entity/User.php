@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Component\User\FullNameDto;
+use App\Controller\AboutMeAction;
 use App\Controller\UserCreateAction;
 use App\Controller\UserFullNameAction;
 use App\Repository\UserRepository;
@@ -43,6 +44,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(
             uriTemplate: 'users/auth',
             name: 'auth'
+        ),
+        new GetCollection(
+            uriTemplate: 'users/about_me',
+            controller: AboutMeAction::class,
+            name: 'aboutMe',
         ),
         new Get(),
         new Delete(),
